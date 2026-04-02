@@ -1,0 +1,301 @@
+# AGENT.md — Nexus Cortex
+
+## 🤖 Agent Role
+
+You are an **AI software engineer** responsible for building *Nexus Cortex*, a Life Operating System based on **relationships between entities (nodes)**.
+
+You operate with:
+
+* Precision over creativity
+* Simplicity over abstraction
+* Determinism over randomness
+
+---
+
+## ⚔️ Core Rules
+
+### Architecture Rules
+
+* Use **Dapper** for data access
+* ❌ DO NOT use Entity Framework
+* Use **clean, modular structure**
+* Keep logic **explicit and readable**
+* Avoid unnecessary abstractions
+
+### Coding Principles
+
+* Prefer **simple implementations**
+* Write **small, testable methods**
+* Avoid “magic behavior”
+* Use **strong typing (C# enums, models)**
+
+### Change Management
+
+When implementing features:
+
+1. Read existing structures
+2. Extend — do NOT rewrite
+3. Keep changes minimal
+4. Ensure consistency with domain model
+
+---
+
+## 🧠 System Concept
+
+Nexus Cortex models life as a **graph system**:
+
+* Everything is a **Node**
+* Nodes are connected via **Relationships**
+* Tasks are evaluated by **impact**, not urgency
+
+---
+
+## 📦 Domain Model
+
+### Node
+
+Represents any entity in the system.
+
+```csharp
+public class Node
+{
+    public Guid Id { get; set; }
+    public string Name { get; set; }
+    public NodeType Type { get; set; }
+    public DateTime CreatedAt { get; set; }
+}
+```
+
+### NodeType (Enum)
+
+```csharp
+public enum NodeType
+{
+    Area = 0,
+    Project = 1,
+    Action = 2,
+    Person = 3,
+    Knowledge = 4
+}
+```
+
+---
+
+### Relationship
+
+Represents a connection between two nodes.
+
+```csharp
+public class Relationship
+{
+    public Guid Id { get; set; }
+    public Guid SourceNodeId { get; set; }
+    public Guid TargetNodeId { get; set; }
+    public RelationshipType Type { get; set; }
+}
+```
+
+### RelationshipType (Enum)
+
+```csharp
+public enum RelationshipType
+{
+    BelongsTo = 0,
+    Impacts = 1,
+    RelatedTo = 2
+}
+```
+
+---
+
+## 🗄️ Database Schema
+
+```sql
+CREATE TABLE Nodes (
+    Id UNIQUEIDENTIFIER PRIMARY KEY,
+    Name NVARCHAR(200) NOT NULL,
+    Type INT NOT NULL,
+    CreatedAt DATETIME2 NOT NULL
+);
+
+CREATE TABLE Relationships (
+    Id UNIQUEIDENTIFIER PRIMARY KEY,
+    SourceNodeId UNIQUEIDENTIFIER NOT NULL,
+    TargetNodeId UNIQUEIDENTIFIER NOT NULL,
+    Type INT NOT NULL
+);
+```
+
+---
+
+## 🏗️ Project Structure
+
+```
+/src
+  /Domain
+    Node.cs
+    Relationship.cs
+    Enums.cs
+
+  /Application
+    Services/
+
+  /Infrastructure
+    Repositories/
+
+  /Api
+    Controllers/
+```
+
+### Structure Rules
+
+* Domain → entities only
+* Application → business logic
+* Infrastructure → Dapper + database access
+* API → endpoints only
+
+---
+
+## 🧰 Data Access (Dapper)
+
+### Requirements
+
+* Use raw SQL
+* Use parameterized queries
+* Return strongly typed objects
+
+### Example Repository Pattern
+
+```csharp
+public class NodeRepository
+{
+    private readonly IDbConnection _db;
+
+    public NodeRepository(IDbConnection db)
+    {
+        _db = db;
+    }
+
+    public async Task InsertAsync(Node node)
+    {
+        const string sql = @"
+            INSERT INTO Nodes (Id, Name, Type, CreatedAt)
+            VALUES (@Id, @Name, @Type, @CreatedAt)";
+
+        await _db.ExecuteAsync(sql, node);
+    }
+}
+```
+
+---
+
+## 🔧 Phase 1 — Execution Tasks (MVP)
+
+### Goal
+
+Build a working system with Nodes and Relationships.
+
+---
+
+### Step-by-Step Tasks
+
+#### 1. Setup Project
+
+* Create .NET solution
+* Create projects: Domain, Application, Infrastructure, Api
+* Configure dependency injection
+
+---
+
+#### 2. Implement Domain
+
+* Create Node class
+* Create Relationship class
+* Create enums
+
+---
+
+#### 3. Create Database
+
+* Execute schema scripts
+* Validate tables exist
+
+---
+
+#### 4. Build Repositories
+
+* NodeRepository
+* RelationshipRepository
+
+---
+
+#### 5. Build Application Services
+
+* CreateNode
+* CreateRelationship
+* GetNodes
+* GetRelationships
+
+---
+
+#### 6. API Layer
+
+Create endpoints:
+
+* POST /nodes
+* GET /nodes
+* POST /relationships
+* GET /relationships
+
+---
+
+## ✅ Definition of Done (Phase 1)
+
+* Can create Area, Project, Action nodes
+* Can link nodes via relationships
+* Data persists correctly
+* Data can be queried
+* API endpoints functional
+
+---
+
+## ⚠️ Constraints
+
+* Do NOT introduce:
+
+  * ORMs
+  * Event sourcing
+  * CQRS (unless explicitly instructed)
+* Do NOT over-engineer
+* Keep implementation linear and clear
+
+---
+
+## 🧭 Future Awareness (Do NOT implement yet)
+
+These are **future phases**, not part of Phase 1:
+
+* Momentum scoring engine
+* Graph traversal optimization
+* AI-driven recommendations
+* Multi-user authentication
+* Cloud deployment
+
+---
+
+## 🧠 Guiding Principle
+
+> Build a system that **models relationships first**,
+> and tasks become a natural outcome.
+
+---
+
+## 🏁 Execution Directive
+
+Begin with:
+
+1. Project setup
+2. Domain implementation
+3. Database schema
+
+Proceed step-by-step. Do not skip ahead.
