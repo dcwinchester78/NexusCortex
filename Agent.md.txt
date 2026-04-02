@@ -271,15 +271,106 @@ Create endpoints:
 
 ---
 
-## 🧭 Future Awareness (Do NOT implement yet)
+## 🧭 Detailed Execution Tasks (Phases 2-6)
 
-These are **future phases**, not part of Phase 1:
+### 🥈 Phase 2 — Structure & Usability
 
-* Momentum scoring engine
-* Graph traversal optimization
-* AI-driven recommendations
-* Multi-user authentication
-* Cloud deployment
+**1. Hierarchy Navigation**
+- **Task 2.1.1**: Create recursive SQL queries (Common Table Expressions) or sequential Dapper queries to fetch node descendants based on `BelongsTo` relationships (e.g., `Area -> Projects -> Actions`).
+- **Task 2.1.2**: Update `NodeService` to map flat relational rows into a nested tree structure (DTO).
+- **Task 2.1.3**: Add API endpoint `GET /nodes/{id}/hierarchy` to expose the tree.
+
+**2. Tagging / Impact Mapping**
+- **Task 2.2.1**: Update `RelationshipService` logic to easily map and index `Impacts` relationships.
+- **Task 2.2.2**: Add API endpoint `GET /nodes/{id}/impacts` to retrieve all parent/Area nodes an Action impacts.
+
+**3. Basic Dashboard**
+- **Task 2.3.1**: Create a `DashboardService` with an aggregated DTO returning Areas, Active Projects, and Pending Actions.
+- **Task 2.3.2**: Write optimized Dapper queries to fetch these aggregates simultaneously.
+- **Task 2.3.3**: Add API endpoint `GET /dashboard`.
+
+**4. Filtering & Views**
+- **Task 2.4.1**: Expand `Nodes` schema via SQL migration to include `Status` (Enum: Active, Completed, Pending) and `DueDate` (DateTime).
+- **Task 2.4.2**: Modify the `GET /nodes` endpoint to accept query parameters (e.g., `?type=`, `?parentId=`, `?status=`).
+- **Task 2.4.3**: Add dynamic SQL `WHERE` clauses in `NodeRepository`.
+- **Task 2.4.4**: Implement a "Today" view by fetching actions with due dates for today via `GET /nodes/today`.
+
+---
+
+### 🥉 Phase 3 — Intelligence Layer (Momentum Engine v1)
+
+**1. Momentum Scoring**
+- **Task 3.1.1**: Add a `MomentumScore` (decimal) column to the `Nodes` table.
+- **Task 3.1.2**: Build a `MomentumService` that calculates scores based on recent, connected Action completions (e.g., counting resolved nodes linked via `BelongsTo` or `Impacts`).
+- **Task 3.1.3**: Add API endpoint `POST /nodes/{id}/calculate-momentum` to trigger score updates.
+
+**2. Stagnation Detection**
+- **Task 3.2.1**: Add a `LastActivityAt` (DateTime) column to the `Nodes` table. Update this timestamp recursively when a child node changes.
+- **Task 3.2.2**: Create a `StagnationService` to query Projects/Areas with `LastActivityAt` older than a set threshold (e.g., 7 days).
+- **Task 3.2.3**: Add API endpoint `GET /dashboard/stagnant`.
+
+**3. Next Best Action (Basic)**
+- **Task 3.3.1**: Implement a sorting algorithm in `MomentumService` that prioritizes pending Actions based on the lowest momentum scores of their parent Areas, combined with high-impact connections.
+- **Task 3.3.2**: Add API endpoint `GET /actions/next-best`.
+
+---
+
+### 🏅 Phase 4 — Second Brain Expansion
+
+**1. Knowledge Nodes**
+- **Task 4.1.1**: Expand the `Nodes` schema with a `Content` (NVARCHAR/Text) field to store markdown notes.
+- **Task 4.1.2**: Create an API endpoint `PATCH /nodes/{id}/content` to update content for `Knowledge` nodes.
+- **Task 4.1.3**: Ensure UI/API support for linking Knowledge nodes to Projects via `RelatedTo` relationships.
+
+**2. Contextual Awareness**
+- **Task 4.2.1**: Build a `ContextService` that fetches all Knowledge nodes associated with an Action's parent Project.
+- **Task 4.2.2**: Include contextual knowledge summaries in the response of `GET /nodes/{id}`.
+
+**3. Daily / Weekly Review System**
+- **Task 4.3.1**: Add a new `ReviewLogs` table (`Id`, `NodeId`, `ReviewedAt`).
+- **Task 4.3.2**: Create a `ReviewService` to flag Areas that lack recent reviews.
+- **Task 4.3.3**: Add API endpoint `GET /reviews/pending`.
+
+---
+
+### 🧠 Phase 5 — Advanced Intelligence
+
+**1. Adaptive Suggestions**
+- **Task 5.1.1**: Create an `ActionHistory` table to track completion times, durations, and behaviors.
+- **Task 5.1.2**: Integrate historical completion rate data into the "Next Best Action" algorithm.
+
+**2. Relationship Weighting**
+- **Task 5.2.1**: Add a `Weight` (Decimal/Float) column to the `Relationships` schema.
+- **Task 5.2.2**: Update repositories, services, and DTOs to accept and store relationship weights.
+- **Task 5.2.3**: Adjust the Momentum Engine to multiply impact scores by the relationship weight.
+
+**3. Graph Analysis**
+- **Task 5.3.1**: Implement advanced graph traversal queries.
+- **Task 5.3.2**: Create algorithms to detect "bottlenecks" (e.g., Projects with >5 pending actions and 0 recent completions).
+- **Task 5.3.3**: Add API endpoint `GET /insights/bottlenecks`.
+
+---
+
+### ⚙️ Phase 6 — Platform & Scale
+
+**1. Modular Architecture**
+- **Task 6.1.1**: Refactor the solution into distinct domain-driven bounded contexts (e.g., `NexusCortex.Tasks`, `NexusCortex.Knowledge`).
+- **Task 6.1.2**: Implement a messaging/event pattern (e.g., MediatR) to decouple service dependencies and handle cross-domain events.
+
+**2. API Layer**
+- **Task 6.2.1**: Implement API versioning (e.g., `/api/v1/...`).
+- **Task 6.2.2**: Cleanly re-integrate Swagger/OpenAPI documentation with XML summaries.
+- **Task 6.2.3**: Add rate-limiting and global exception-handling middleware.
+
+**3. Authentication / Multi-User**
+- **Task 6.3.1**: Add `UserId` (Guid) to all database tables.
+- **Task 6.3.2**: Implement JWT Authentication middleware.
+- **Task 6.3.3**: Update all repository queries to strictly scope data by `UserId`.
+
+**4. Cloud Deployment**
+- **Task 6.4.1**: Create `Dockerfile` and `docker-compose.yml` files for local containerization.
+- **Task 6.4.2**: Introduce a tool like DbUp to automate database schema migrations instead of relying on manual SQL file execution.
+- **Task 6.4.3**: Create CI/CD pipelines (e.g., GitHub Actions) to build, test, and deploy the backend.
 
 ---
 
