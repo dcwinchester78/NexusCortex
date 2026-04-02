@@ -10,7 +10,8 @@ namespace NexusCortex.Application.Interfaces
     {
         Task InsertAsync(Node node);
         Task<Node?> GetByIdAsync(Guid id);
-        Task<IEnumerable<Node>> GetAllAsync();
+        Task<IEnumerable<Node>> GetAllAsync(NodeType? type = null, Guid? parentId = null, NodeStatus? status = null);
+        Task<IEnumerable<Node>> GetTodayActionsAsync();
         Task<IEnumerable<NodeHierarchyFlatDto>> GetHierarchyAsync(Guid rootNodeId);
         Task<IEnumerable<Node>> GetImpactedNodesAsync(Guid sourceNodeId);
     }

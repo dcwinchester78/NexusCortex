@@ -33,9 +33,29 @@ namespace NexusCortex.Infrastructure.Repositories
             return await _db.QuerySingleOrDefaultAsync<Node>(sql, new { Id = id });
         }
 
-        public async Task<IEnumerable<Node>> GetAllAsync()
+        public async Task<IEnumerable<Node>> GetAllAsync(NodeType? type = null, Guid? parentId = null, NodeStatus? status = null)
         {
-            const string sql = "SELECT * FROM Nodes";
+            var sql = "SELECT n.* FROM Nodes n ";
+            if (parentId.HasValue)
+            {
+                sql += "INNER JOIN Relationships r ON n.Id = r.SourceNodeId AND r.Type = 0 AND r.TargetNodeId = @ParentId ";
+            }
+            sql += "WHERE 1=1 ";
+
+            if (type.HasValue) sql += "AND n.Type = @Type ";
+            if (status.HasValue) sql += "AND n.Status = @Status ";
+
+            return await _db.QueryAsync<Node>(sql, new { Type = type, ParentId = parentId, Status = status });
+        }
+
+        public async Task<IEnumerable<Node>> GetTodayActionsAsync()
+        {
+            const string sql = @"
+                SELECT * FROM Nodes 
+                WHERE Type = 2 
+                AND DueDate >= CAST(GETUTCDATE() AS DATE) 
+                AND DueDate < CAST(DATEADD(day, 1, GETUTCDATE()) AS DATE)";
+
             return await _db.QueryAsync<Node>(sql);
         }
 

@@ -33,9 +33,14 @@ namespace NexusCortex.Application.Services
             return node;
         }
 
-        public async Task<IEnumerable<Node>> GetNodesAsync()
+        public async Task<IEnumerable<Node>> GetNodesAsync(NodeType? type = null, Guid? parentId = null, NodeStatus? status = null)
         {
-            return await _nodeRepository.GetAllAsync();
+            return await _nodeRepository.GetAllAsync(type, parentId, status);
+        }
+
+        public async Task<IEnumerable<Node>> GetTodayActionsAsync()
+        {
+            return await _nodeRepository.GetTodayActionsAsync();
         }
 
         public async Task<NodeHierarchyDto?> GetNodeHierarchyAsync(Guid rootNodeId)

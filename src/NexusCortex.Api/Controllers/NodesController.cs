@@ -19,9 +19,16 @@ namespace NexusCortex.Api.Controllers
         }
 
         [HttpGet]
-        public async Task<IActionResult> Get()
+        public async Task<IActionResult> Get([FromQuery] NodeType? type, [FromQuery] Guid? parentId, [FromQuery] NodeStatus? status)
         {
-            var nodes = await _nodeService.GetNodesAsync();
+            var nodes = await _nodeService.GetNodesAsync(type, parentId, status);
+            return Ok(nodes);
+        }
+
+        [HttpGet("today")]
+        public async Task<IActionResult> GetToday()
+        {
+            var nodes = await _nodeService.GetTodayActionsAsync();
             return Ok(nodes);
         }
 
