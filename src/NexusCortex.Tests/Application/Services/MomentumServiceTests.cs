@@ -1,10 +1,12 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
 using Moq;
 using NexusCortex.Application.Interfaces;
 using NexusCortex.Application.Services;
 using NexusCortex.Domain;
+using Shouldly;
 using Xunit;
 
 namespace NexusCortex.Tests.Application.Services
@@ -32,7 +34,7 @@ namespace NexusCortex.Tests.Application.Services
             var score = await _momentumService.CalculateMomentumAsync(Guid.NewGuid());
 
             // Assert
-            Assert.Equal(0, score);
+            score.ShouldBe(0);
         }
 
         [Fact]
@@ -49,7 +51,7 @@ namespace NexusCortex.Tests.Application.Services
             var score = await _momentumService.CalculateMomentumAsync(nodeId);
 
             // Assert
-            Assert.Equal(0, score);
+            score.ShouldBe(0);
             _nodeRepoMock.Verify(repo => repo.UpdateAsync(It.Is<Node>(n => n.MomentumScore == 0)), Times.Once);
         }
 
@@ -78,7 +80,7 @@ namespace NexusCortex.Tests.Application.Services
             var score = await _momentumService.CalculateMomentumAsync(targetNodeId);
 
             // Assert
-            Assert.Equal(0, score);
+            score.ShouldBe(0);
             _nodeRepoMock.Verify(repo => repo.UpdateAsync(It.Is<Node>(n => n.MomentumScore == 0)), Times.Once);
         }
 
@@ -107,7 +109,7 @@ namespace NexusCortex.Tests.Application.Services
             var score = await _momentumService.CalculateMomentumAsync(targetNodeId);
 
             // Assert
-            Assert.Equal(10, score);
+            score.ShouldBe(10);
             _nodeRepoMock.Verify(repo => repo.UpdateAsync(It.Is<Node>(n => n.MomentumScore == 10)), Times.Once);
         }
 
@@ -136,7 +138,7 @@ namespace NexusCortex.Tests.Application.Services
             var score = await _momentumService.CalculateMomentumAsync(targetNodeId);
 
             // Assert
-            Assert.Equal(15, score);
+            score.ShouldBe(15);
             _nodeRepoMock.Verify(repo => repo.UpdateAsync(It.Is<Node>(n => n.MomentumScore == 15)), Times.Once);
         }
 
@@ -173,7 +175,7 @@ namespace NexusCortex.Tests.Application.Services
             var score = await _momentumService.CalculateMomentumAsync(targetNodeId);
 
             // Assert
-            Assert.Equal(25, score); // 10 + 15 + 0
+            score.ShouldBe(25); // 10 + 15 + 0
             _nodeRepoMock.Verify(repo => repo.UpdateAsync(It.Is<Node>(n => n.MomentumScore == 25)), Times.Once);
         }
 
@@ -210,9 +212,9 @@ namespace NexusCortex.Tests.Application.Services
             var result = (await _momentumService.GetNextBestActionsAsync()).ToList();
 
             // Assert
-            Assert.Equal(2, result.Count);
-            Assert.Equal(actionHighPriorityId, result[0].Id); // High priority first because it impacts a node with 0 momentum (50 - 0 = 50 score)
-            Assert.Equal(actionLowPriorityId, result[1].Id); // Low priority second because it impacts a node with 100 momentum (50 - 100 = -50 score)
+            result.Count.ShouldBe(2);
+            result[0].Id.ShouldBe(actionHighPriorityId); // High priority first because it impacts a node with 0 momentum (50 - 0 = 50 score)
+            result[1].Id.ShouldBe(actionLowPriorityId); // Low priority second because it impacts a node with 100 momentum (50 - 100 = -50 score)
         }
     }
 }
