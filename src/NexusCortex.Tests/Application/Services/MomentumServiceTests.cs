@@ -176,5 +176,43 @@ namespace NexusCortex.Tests.Application.Services
             Assert.Equal(25, score); // 10 + 15 + 0
             _nodeRepoMock.Verify(repo => repo.UpdateAsync(It.Is<Node>(n => n.MomentumScore == 25)), Times.Once);
         }
+
+        [Fact]
+        public async Task GetNextBestActionsAsync_SortsByLowestMomentum_And_HighImpacts()
+        {
+            // Arrange
+            var actionHighPriorityId = Guid.NewGuid();
+            var actionLowPriorityId = Guid.NewGuid();
+            var targetLowMomentumId = Guid.NewGuid();
+            var targetHighMomentumId = Guid.NewGuid();
+
+            var actionHighPriority = new Node { Id = actionHighPriorityId, Type = NodeType.Action, Status = NodeStatus.Pending, Name = "High Priority" };
+            var actionLowPriority = new Node { Id = actionLowPriorityId, Type = NodeType.Action, Status = NodeStatus.Pending, Name = "Low Priority" };
+            
+            var targetLowMomentum = new Node { Id = targetLowMomentumId, Type = NodeType.Area, MomentumScore = 0 }; // Low momentum, higher priority
+            var targetHighMomentum = new Node { Id = targetHighMomentumId, Type = NodeType.Area, MomentumScore = 100 }; // High momentum, lower priority
+
+            _nodeRepoMock.Setup(repo => repo.GetAllAsync(NodeType.Action, null, NodeStatus.Pending))
+                .ReturnsAsync(new List<Node> { actionLowPriority, actionHighPriority });
+
+            _nodeRepoMock.Setup(repo => repo.GetAllAsync(null, null, null))
+                .ReturnsAsync(new List<Node> { actionLowPriority, actionHighPriority, targetLowMomentum, targetHighMomentum });
+
+            var relationships = new List<Relationship>
+            {
+                new Relationship { SourceNodeId = actionHighPriorityId, TargetNodeId = targetLowMomentumId, Type = RelationshipType.Impacts },
+                new Relationship { SourceNodeId = actionLowPriorityId, TargetNodeId = targetHighMomentumId, Type = RelationshipType.Impacts }
+            };
+
+            _relRepoMock.Setup(repo => repo.GetAllAsync()).ReturnsAsync(relationships);
+
+            // Act
+            var result = (await _momentumService.GetNextBestActionsAsync()).ToList();
+
+            // Assert
+            Assert.Equal(2, result.Count);
+            Assert.Equal(actionHighPriorityId, result[0].Id); // High priority first because it impacts a node with 0 momentum (50 - 0 = 50 score)
+            Assert.Equal(actionLowPriorityId, result[1].Id); // Low priority second because it impacts a node with 100 momentum (50 - 100 = -50 score)
+        }
     }
 }

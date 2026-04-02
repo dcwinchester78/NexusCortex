@@ -42,5 +42,55 @@ namespace NexusCortex.Application.Services
 
             return score;
         }
+
+        public async Task<IEnumerable<Node>> GetNextBestActionsAsync(int limit = 5)
+        {
+            var pendingActions = (await _nodeRepository.GetAllAsync(NodeType.Action, null, NodeStatus.Pending)).ToList();
+            if (!pendingActions.Any()) return new List<Node>();
+
+            var allRelationships = await _relationshipRepository.GetAllAsync();
+            var allNodes = await _nodeRepository.GetAllAsync();
+            var nodeDict = allNodes.ToDictionary(n => n.Id);
+
+            var actionScores = new Dictionary<Guid, decimal>();
+
+            foreach (var action in pendingActions)
+            {
+                decimal priorityScore = 0;
+                var links = allRelationships.Where(r => r.SourceNodeId == action.Id).ToList();
+
+                foreach (var link in links)
+                {
+                    if (nodeDict.TryGetValue(link.TargetNodeId, out var targetNode))
+                    {
+                        // Priority algorithm: Base points minus target's momentum.
+                        // Actions connected to nodes with lower momentum get higher priority.
+                        decimal basePoints = link.Type == RelationshipType.Impacts ? 50m : 20m;
+                        decimal scoreContribution = basePoints - targetNode.MomentumScore;
+                        
+                        // If it belongs to a Project, also factor in the Area's momentum.
+                        if (targetNode.Type == NodeType.Project)
+                        {
+                            var projectLinks = allRelationships.Where(r => r.SourceNodeId == targetNode.Id && r.Type == RelationshipType.BelongsTo).ToList();
+                            foreach (var pLink in projectLinks)
+                            {
+                                if (nodeDict.TryGetValue(pLink.TargetNodeId, out var areaNode))
+                                {
+                                    scoreContribution += (30m - areaNode.MomentumScore);
+                                }
+                            }
+                        }
+
+                        priorityScore += scoreContribution;
+                    }
+                }
+                
+                actionScores[action.Id] = priorityScore;
+            }
+
+            return pendingActions
+                .OrderByDescending(a => actionScores.TryGetValue(a.Id, out var score) ? score : 0)
+                .Take(limit);
+        }
     }
 }

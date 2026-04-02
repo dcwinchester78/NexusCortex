@@ -135,23 +135,23 @@ Introduce **decision-making assistance**
 
 1. **Momentum Scoring**
 
-   * Track activity per Area
-   * Score based on:
+   - [x] Track activity per Area
+   - [x] Score based on:
 
-     * Recent actions
-     * Project progress
+     - [x] Recent actions
+     - [x] Project progress
 
 2. **Stagnation Detection**
 
-   * Identify inactive Projects
-   * Highlight neglected Areas
+   - [x] Identify inactive Projects
+   - [x] Highlight neglected Areas
 
 3. **Next Best Action (Basic)**
 
-   * Suggest actions based on:
+   - [x] Suggest actions based on:
 
-     * Low momentum Areas
-     * High-impact relationships
+     - [x] Low momentum Areas
+     - [x] High-impact relationships
 
 ---
 
