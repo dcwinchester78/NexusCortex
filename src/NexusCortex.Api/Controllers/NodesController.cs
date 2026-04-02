@@ -1,3 +1,4 @@
+using System;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Mvc;
 using NexusCortex.Application.Services;
@@ -29,6 +30,14 @@ namespace NexusCortex.Api.Controllers
         {
             var node = await _nodeService.CreateNodeAsync(request.Name, (NodeType)request.Type);
             return Ok(node);
+        }
+
+        [HttpGet("{id}/hierarchy")]
+        public async Task<IActionResult> GetHierarchy(Guid id)
+        {
+            var hierarchy = await _nodeService.GetNodeHierarchyAsync(id);
+            if (hierarchy == null) return NotFound();
+            return Ok(hierarchy);
         }
     }
 }

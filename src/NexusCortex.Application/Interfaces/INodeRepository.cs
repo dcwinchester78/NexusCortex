@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
+using NexusCortex.Application.Dtos;
 using NexusCortex.Domain;
 
 namespace NexusCortex.Application.Interfaces
@@ -10,5 +11,6 @@ namespace NexusCortex.Application.Interfaces
         Task InsertAsync(Node node);
         Task<Node?> GetByIdAsync(Guid id);
         Task<IEnumerable<Node>> GetAllAsync();
+        Task<IEnumerable<NodeHierarchyFlatDto>> GetHierarchyAsync(Guid rootNodeId);
     }
 }

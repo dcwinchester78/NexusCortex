@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading.Tasks;
+using NexusCortex.Application.Dtos;
 using NexusCortex.Application.Interfaces;
 using NexusCortex.Domain;
 
@@ -32,6 +34,36 @@ namespace NexusCortex.Application.Services
         public async Task<IEnumerable<Node>> GetNodesAsync()
         {
             return await _nodeRepository.GetAllAsync();
+        }
+
+        public async Task<NodeHierarchyDto?> GetNodeHierarchyAsync(Guid rootNodeId)
+        {
+            var flatNodes = (await _nodeRepository.GetHierarchyAsync(rootNodeId)).ToList();
+            if (!flatNodes.Any()) return null;
+
+            var lookup = flatNodes.ToDictionary(n => n.Id, n => new NodeHierarchyDto
+            {
+                Id = n.Id,
+                Name = n.Name,
+                Type = n.Type,
+                CreatedAt = n.CreatedAt
+            });
+
+            NodeHierarchyDto? root = null;
+
+            foreach (var flatNode in flatNodes)
+            {
+                if (flatNode.ParentId == null)
+                {
+                    root = lookup[flatNode.Id];
+                }
+                else if (lookup.TryGetValue(flatNode.ParentId.Value, out var parent))
+                {
+                    parent.Children.Add(lookup[flatNode.Id]);
+                }
+            }
+
+            return root;
         }
     }
 }
