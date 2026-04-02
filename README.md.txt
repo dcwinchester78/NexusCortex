@@ -103,25 +103,25 @@ Make the system **usable and intuitive**
 
 1. **Hierarchy Navigation**
 
-   * View Areas → Projects → Actions
-   * Graph-aware traversal (basic)
+   - [x] View Areas → Projects → Actions
+   - [x] Graph-aware traversal (basic)
 
 2. **Tagging / Impact Mapping**
 
-   * Actions can impact multiple Areas
-   * Introduce "Impact Tags"
+   - [x] Actions can impact multiple Areas
+   - [x] Introduce "Impact Tags"
 
 3. **Basic Dashboard**
 
-   * List Areas
-   * Show active Projects
-   * Show pending Actions
+   - [x] List Areas
+   - [x] Show active Projects
+   - [x] Show pending Actions
 
 4. **Filtering & Views**
 
-   * Filter by Area
-   * Filter by Project
-   * “Today” view
+   - [x] Filter by Area
+   - [x] Filter by Project
+   - [x] “Today” view
 
 ---
 
