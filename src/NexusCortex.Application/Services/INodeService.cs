@@ -9,6 +9,7 @@ namespace NexusCortex.Application.Services
     public interface INodeService
     {
         Task<Node> CreateNodeAsync(string name, NodeType type, NodeStatus status = NodeStatus.Pending, DateTime? dueDate = null);
+        Task<Node?> GetNodeByIdAsync(Guid id);
         Task<IEnumerable<Node>> GetNodesAsync(NodeType? type = null, Guid? parentId = null, NodeStatus? status = null);
         Task<IEnumerable<Node>> GetTodayActionsAsync();
         Task<NodeHierarchyDto?> GetNodeHierarchyAsync(Guid rootNodeId);

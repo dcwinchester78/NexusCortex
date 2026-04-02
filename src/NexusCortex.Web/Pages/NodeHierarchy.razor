@@ -1,0 +1,100 @@
+@page "/nodes"
+@using NexusCortex.Web.Services
+@using NexusCortex.Domain
+@using NexusCortex.Application.Dtos
+@inject INodeApiClient NodeClient
+@inject NavigationManager NavigationManager
+
+<PageTitle>Hierarchy Explorer - Nexus Cortex</PageTitle>
+
+<MudText Typo="Typo.h3" Class="mb-6">Hierarchy Explorer</MudText>
+
+@if (_isLoading)
+{
+    <MudProgressCircular Color="Color.Primary" Indeterminate="true" />
+}
+else
+{
+    <MudPaper Elevation="2" Class="pa-4">
+        <MudTreeView T="NodeHierarchyDto" Hover="true">
+            @foreach (var area in _treeItems)
+            {
+                @RenderTree(area)
+            }
+        </MudTreeView>
+    </MudPaper>
+}
+
+@code {
+    private RenderFragment<NodeHierarchyDto> RenderTree = null!;
+
+    private bool _isLoading = true;
+    private HashSet<NodeHierarchyDto> _treeItems = new();
+
+    protected override void OnInitialized()
+    {
+        RenderTree = (node) => __builder =>
+        {
+            <MudTreeViewItem T="NodeHierarchyDto" Value="@node" Text="@node.Name" Expanded="true">
+                <Content>
+                    <MudIcon Icon="@GetIconForType(node.Type)" Color="Color.Default" Class="mr-2"/>
+                    <MudText>@node.Name</MudText>
+                    <MudSpacer />
+                    <MudButton Variant="Variant.Text" Size="Size.Small" Color="Color.Primary" OnClick="@(() => NavigateToDetails(node.Id))">View</MudButton>
+                </Content>
+                <ChildContent>
+                    @foreach (var child in node.Children)
+                    {
+                        @RenderTree(child)
+                    }
+                </ChildContent>
+            </MudTreeViewItem>
+        };
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            // Load top level areas
+            var areas = await NodeClient.GetNodesAsync(NodeType.Area);
+            if (areas != null)
+            {
+                foreach (var area in areas)
+                {
+                    var hierarchy = await NodeClient.GetHierarchyAsync(area.Id);
+                    if (hierarchy != null)
+                    {
+                        _treeItems.Add(hierarchy);
+                    }
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error loading hierarchy: {ex.Message}");
+        }
+        finally
+        {
+            _isLoading = false;
+        }
+    }
+
+    private string GetIconForType(NodeType type)
+    {
+        return type switch
+        {
+            NodeType.Area => Icons.Material.Filled.Folder,
+            NodeType.Project => Icons.Material.Filled.AccountTree,
+            NodeType.Action => Icons.Material.Filled.CheckBoxOutlineBlank,
+            NodeType.Person => Icons.Material.Filled.Person,
+            NodeType.Knowledge => Icons.Material.Filled.MenuBook,
+            _ => Icons.Material.Filled.HelpOutline
+        };
+    }
+
+    private void NavigateToDetails(Guid id)
+    {
+        NavigationManager.NavigateTo($"/nodes/{id}");
+    }
+}

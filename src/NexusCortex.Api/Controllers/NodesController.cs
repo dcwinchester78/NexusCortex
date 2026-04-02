@@ -34,6 +34,14 @@ namespace NexusCortex.Api.Controllers
             return Ok(nodes);
         }
 
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetById(Guid id)
+        {
+            var node = await _nodeService.GetNodeByIdAsync(id);
+            if (node == null) return NotFound();
+            return Ok(node);
+        }
+
         [HttpPost]
         public async Task<IActionResult> Post([FromBody] CreateNodeRequest request)
         {

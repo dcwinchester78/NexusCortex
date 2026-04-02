@@ -1,0 +1,114 @@
+@page "/nodes/{Id:guid}"
+@using NexusCortex.Web.Services
+@using NexusCortex.Domain
+@using NexusCortex.Application.Dtos
+@inject INodeApiClient NodeClient
+
+<PageTitle>Node Details - Nexus Cortex</PageTitle>
+
+@if (_isLoading)
+{
+    <MudProgressCircular Color="Color.Primary" Indeterminate="true" />
+}
+else if (_node == null)
+{
+    <MudAlert Severity="Severity.Error">Node not found.</MudAlert>
+}
+else
+{
+    <MudBreadcrumbs Items="_breadcrumbs" Class="mb-4" />
+
+    <MudText Typo="Typo.h3" Class="mb-2">@_node.Name</MudText>
+    <MudText Typo="Typo.subtitle1" Color="Color.Secondary" Class="mb-6">@_node.Type.ToString()</MudText>
+
+    <MudTabs Elevation="2" Rounded="true" ApplyEffectsToContainer="true">
+        <MudTabPanel Text="Details" Icon="@Icons.Material.Filled.Info">
+            <div class="pa-6">
+                <MudGrid>
+                    <MudItem xs="12" sm="6">
+                        <MudText Typo="Typo.subtitle2">Status</MudText>
+                        <MudText Typo="Typo.body1" Class="mb-4">@_node.Status.ToString()</MudText>
+
+                        <MudText Typo="Typo.subtitle2">Created</MudText>
+                        <MudText Typo="Typo.body1" Class="mb-4">@_node.CreatedAt.ToString("g")</MudText>
+                    </MudItem>
+                    <MudItem xs="12" sm="6">
+                        <MudText Typo="Typo.subtitle2">Due Date</MudText>
+                        <MudText Typo="Typo.body1" Class="mb-4">@(_node.DueDate?.ToString("g") ?? "None")</MudText>
+
+                        <MudText Typo="Typo.subtitle2">Momentum Score</MudText>
+                        <MudProgressLinear Color="Color.Info" Value="@((double)_node.MomentumScore)" Max="100" Class="my-2" />
+                        <MudText Typo="Typo.body1" Class="mb-4">@_node.MomentumScore</MudText>
+
+                        <MudText Typo="Typo.subtitle2">Last Activity</MudText>
+                        <MudText Typo="Typo.body1">@_node.LastActivityAt.ToString("g")</MudText>
+                    </MudItem>
+                </MudGrid>
+            </div>
+        </MudTabPanel>
+
+        <MudTabPanel Text="Impacts" Icon="@Icons.Material.Filled.ElectricBolt">
+            <div class="pa-6">
+                @if (_impacts == null || !_impacts.Any())
+                {
+                    <MudText Typo="Typo.body1">This node does not currently impact any other nodes.</MudText>
+                }
+                else
+                {
+                    <div class="d-flex flex-wrap gap-2">
+                        @foreach (var impact in _impacts)
+                        {
+                            <MudChip T="string" Color="Color.Success" Variant="Variant.Filled" Icon="@Icons.Material.Filled.ArrowUpward">
+                                @impact.Name (@impact.Type)
+                            </MudChip>
+                        }
+                    </div>
+                }
+            </div>
+        </MudTabPanel>
+    </MudTabs>
+}
+
+@code {
+    [Parameter]
+    public Guid Id { get; set; }
+
+    private bool _isLoading = true;
+    private Node? _node;
+    private IEnumerable<Node>? _impacts;
+    private List<BreadcrumbItem> _breadcrumbs = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            var nodeTask = NodeClient.GetNodeByIdAsync(Id);
+            var impactsTask = NodeClient.GetImpactsAsync(Id);
+
+            await Task.WhenAll(nodeTask, impactsTask);
+
+            _node = await nodeTask;
+            _impacts = await impactsTask;
+
+            if (_node != null)
+            {
+                // In a future update, we will fetch the true path recursively.
+                // For now, we simulate basic breadcrumbs showing Home > NodeName
+                _breadcrumbs = new List<BreadcrumbItem>
+                {
+                    new BreadcrumbItem("Home", href: "/"),
+                    new BreadcrumbItem("Hierarchy", href: "/nodes"),
+                    new BreadcrumbItem(_node.Name, href: null, disabled: true)
+                };
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error loading node details: {ex.Message}");
+        }
+        finally
+        {
+            _isLoading = false;
+        }
+    }
+}
