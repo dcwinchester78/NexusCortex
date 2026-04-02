@@ -62,34 +62,34 @@ Establish the **core structure** of the system.
 
 1. **Project Setup**
 
-   * Initialize solution (ASP.NET Core / Console / Blazor TBD)
-   * Configure configuration management
-   * Set up logging
+   - [x] Initialize solution (ASP.NET Core / Console / Blazor TBD)
+   - [x] Configure configuration management
+   - [x] Set up logging
 
 2. **Domain Design**
 
-   * Create base `Node` entity
-   * Create `Relationship` entity
-   * Define Node types (Area, Project, Action)
+   - [x] Create base `Node` entity
+   - [x] Create `Relationship` entity
+   - [x] Define Node types (Area, Project, Action)
 
 3. **Data Layer (Dapper Preferred)**
 
-   * Design schema:
+   - [x] Design schema:
 
-     * `Nodes`
-     * `Relationships`
-   * Implement repository pattern (lightweight)
+     - [x] `Nodes`
+     - [x] `Relationships`
+   - [x] Implement repository pattern (lightweight)
 
 4. **Basic CRUD**
 
-   * Create Areas
-   * Create Projects under Areas
-   * Create Actions under Projects
+   - [x] Create Areas
+   - [x] Create Projects under Areas
+   - [x] Create Actions under Projects
 
 5. **Relationship Linking**
 
-   * Allow Actions to link to multiple Areas
-   * Store relationship types (e.g., "impacts", "belongs_to")
+   - [x] Allow Actions to link to multiple Areas
+   - [x] Store relationship types (e.g., "impacts", "belongs_to")
 
 ---
 
