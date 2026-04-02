@@ -351,7 +351,50 @@ Create endpoints:
 
 ---
 
-### ⚙️ Phase 6 — Platform & Scale
+### 🎨 Phase 7 — Frontend Foundation (Blazor WASM)
+
+**1. Project Setup & Architecture**
+- **Task 7.1.1**: Create a new Blazor WebAssembly project (`NexusCortex.Web`) in the solution.
+- **Task 7.1.2**: Install `MudBlazor` for the UI component library. Configure `_Imports.razor`, `MainLayout.razor`, and register MudServices in `Program.cs`.
+- **Task 7.1.3**: Configure CORS in the `NexusCortex.Api` to allow requests from the Blazor WebAssembly application (typically `localhost:5000` or similar).
+
+**2. API Integration Layer**
+- **Task 7.2.1**: Create typed HTTP Client services in Blazor (e.g., `INodeApiClient`, `IDashboardApiClient`) that mirror the backend contracts.
+- **Task 7.2.2**: Define shared DTOs or reference the `NexusCortex.Domain` and `NexusCortex.Application` projects directly from the Blazor WASM project to share models (Nodes, Relationships, Hierarchy).
+
+---
+
+### 🖥️ Phase 8 — The "Command Center" Dashboard
+
+**1. Next Best Action Panel**
+- **Task 8.1.1**: Create a `NextBestActions.razor` component using `MudCard` and `MudList`.
+- **Task 8.1.2**: Fetch data from `GET /nodes/actions/next-best` and display the highest priority pending tasks, emphasizing their impact scores.
+
+**2. Momentum Area Grid**
+- **Task 8.2.1**: Fetch Dashboard data (`GET /dashboard`).
+- **Task 8.2.2**: Create a responsive `MudGrid` of `MudCard` components for each Area.
+- **Task 8.2.3**: Visualize the `MomentumScore` of each Area using a `MudProgressLinear` or similar indicator.
+
+**3. Stagnation Alerts**
+- **Task 8.3.1**: Fetch stagnant nodes (`GET /dashboard/stagnant`).
+- **Task 8.3.2**: Display prominent `MudAlert` banners at the top of the dashboard for neglected Areas or Projects, prompting user action.
+
+---
+
+### 🌲 Phase 9 — Navigation & Contextual Views
+
+**1. Node Hierarchy Explorer**
+- **Task 9.1.1**: Create a global sidebar navigation using `MudTreeView`.
+- **Task 9.1.2**: Fetch the full node hierarchy (`GET /nodes/{rootId}/hierarchy`) and dynamically render the tree of Areas -> Projects -> Actions.
+
+**2. Node Detail View ("Second Brain" Context)**
+- **Task 9.2.1**: Create a dynamic detail page (`/node/{id}`) using routing.
+- **Task 9.2.2**: Use `MudBreadcrumbs` to show the path back to the parent Area.
+- **Task 9.2.3**: Use `MudTabs` to organize information:
+  - Tab 1: Details (Name, Status, Due Date).
+  - Tab 2: Impacts (Display `MudChip` elements for linked Areas/Projects fetched via `GET /nodes/{id}/impacts`).
+
+---
 
 **1. Modular Architecture**
 - **Task 6.1.1**: Refactor the solution into distinct domain-driven bounded contexts (e.g., `NexusCortex.Tasks`, `NexusCortex.Knowledge`).

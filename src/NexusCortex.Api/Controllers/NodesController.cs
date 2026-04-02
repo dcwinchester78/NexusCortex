@@ -63,7 +63,7 @@ namespace NexusCortex.Api.Controllers
             return Ok(new { MomentumScore = score });
         }
 
-        [HttpGet("/actions/next-best")]
+        [HttpGet("actions/next-best")]
         public async Task<IActionResult> GetNextBestActions([FromQuery] int limit = 5)
         {
             var actions = await _momentumService.GetNextBestActionsAsync(limit);
