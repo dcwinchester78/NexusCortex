@@ -12,5 +12,6 @@ namespace NexusCortex.Application.Interfaces
         Task<Node?> GetByIdAsync(Guid id);
         Task<IEnumerable<Node>> GetAllAsync();
         Task<IEnumerable<NodeHierarchyFlatDto>> GetHierarchyAsync(Guid rootNodeId);
+        Task<IEnumerable<Node>> GetImpactedNodesAsync(Guid sourceNodeId);
     }
 }

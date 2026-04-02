@@ -39,5 +39,12 @@ namespace NexusCortex.Api.Controllers
             if (hierarchy == null) return NotFound();
             return Ok(hierarchy);
         }
+
+        [HttpGet("{id}/impacts")]
+        public async Task<IActionResult> GetImpacts(Guid id)
+        {
+            var impacts = await _nodeService.GetImpactedNodesAsync(id);
+            return Ok(impacts);
+        }
     }
 }

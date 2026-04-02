@@ -65,5 +65,10 @@ namespace NexusCortex.Application.Services
 
             return root;
         }
+
+        public async Task<IEnumerable<Node>> GetImpactedNodesAsync(Guid sourceNodeId)
+        {
+            return await _nodeRepository.GetImpactedNodesAsync(sourceNodeId);
+        }
     }
 }

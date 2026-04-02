@@ -11,5 +11,6 @@ namespace NexusCortex.Application.Services
         Task<Node> CreateNodeAsync(string name, NodeType type);
         Task<IEnumerable<Node>> GetNodesAsync();
         Task<NodeHierarchyDto?> GetNodeHierarchyAsync(Guid rootNodeId);
+        Task<IEnumerable<Node>> GetImpactedNodesAsync(Guid sourceNodeId);
     }
 }

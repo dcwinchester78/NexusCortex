@@ -59,5 +59,16 @@ namespace NexusCortex.Infrastructure.Repositories
 
             return await _db.QueryAsync<NodeHierarchyFlatDto>(sql, new { RootNodeId = rootNodeId });
         }
+
+        public async Task<IEnumerable<Node>> GetImpactedNodesAsync(Guid sourceNodeId)
+        {
+            const string sql = @"
+                SELECT n.*
+                FROM Nodes n
+                INNER JOIN Relationships r ON n.Id = r.TargetNodeId
+                WHERE r.SourceNodeId = @SourceNodeId AND r.Type = 1;";
+
+            return await _db.QueryAsync<Node>(sql, new { SourceNodeId = sourceNodeId });
+        }
     }
 }
