@@ -73,13 +73,13 @@ namespace NexusCortex.Infrastructure.Repositories
         {
             const string sql = @"
                 WITH NodeCTE AS (
-                    SELECT n.Id, n.Name, n.Type, n.CreatedAt, n.Status, n.DueDate, n.MomentumScore, CAST(NULL AS UNIQUEIDENTIFIER) as ParentId
+                    SELECT n.Id, n.Name, n.Type, n.CreatedAt, n.Status, n.DueDate, n.MomentumScore, n.LastActivityAt, CAST(NULL AS UNIQUEIDENTIFIER) as ParentId
                     FROM Nodes n
                     WHERE n.Id = @RootNodeId
 
                     UNION ALL
 
-                    SELECT n.Id, n.Name, n.Type, n.CreatedAt, n.Status, n.DueDate, n.MomentumScore, r.TargetNodeId as ParentId
+                    SELECT n.Id, n.Name, n.Type, n.CreatedAt, n.Status, n.DueDate, n.MomentumScore, n.LastActivityAt, r.TargetNodeId as ParentId
                     FROM Nodes n
                     INNER JOIN Relationships r ON n.Id = r.SourceNodeId
                     INNER JOIN NodeCTE c ON r.TargetNodeId = c.Id
@@ -99,6 +99,27 @@ namespace NexusCortex.Infrastructure.Repositories
                 WHERE r.SourceNodeId = @SourceNodeId AND r.Type = 1;";
 
             return await _db.QueryAsync<Node>(sql, new { SourceNodeId = sourceNodeId });
+        }
+
+        public async Task UpdateActivityRecursivelyAsync(Guid nodeId, DateTime activityDate)
+        {
+            const string sql = @"
+                WITH ParentCTE AS (
+                    SELECT TargetNodeId as ParentId FROM Relationships WHERE SourceNodeId = @NodeId AND Type = 0
+                    UNION ALL
+                    SELECT r.TargetNodeId FROM Relationships r INNER JOIN ParentCTE p ON r.SourceNodeId = p.ParentId WHERE r.Type = 0
+                )
+                UPDATE Nodes 
+                SET LastActivityAt = @ActivityDate 
+                WHERE Id IN (SELECT ParentId FROM ParentCTE) OR Id = @NodeId;";
+
+            await _db.ExecuteAsync(sql, new { NodeId = nodeId, ActivityDate = activityDate });
+        }
+
+        public async Task<IEnumerable<Node>> GetStagnantNodesAsync(DateTime threshold)
+        {
+            const string sql = "SELECT * FROM Nodes WHERE Type IN (0, 1) AND LastActivityAt < @Threshold";
+            return await _db.QueryAsync<Node>(sql, new { Threshold = threshold });
         }
     }
 }

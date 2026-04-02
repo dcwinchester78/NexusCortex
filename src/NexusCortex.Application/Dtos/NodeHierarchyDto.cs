@@ -13,6 +13,7 @@ namespace NexusCortex.Application.Dtos
         public NodeStatus Status { get; set; }
         public DateTime? DueDate { get; set; }
         public decimal MomentumScore { get; set; }
+        public DateTime LastActivityAt { get; set; }
         public List<NodeHierarchyDto> Children { get; set; } = new();
     }
 }

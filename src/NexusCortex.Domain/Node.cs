@@ -11,5 +11,6 @@ namespace NexusCortex.Domain
         public NodeStatus Status { get; set; }
         public DateTime? DueDate { get; set; }
         public decimal MomentumScore { get; set; }
+        public DateTime LastActivityAt { get; set; }
     }
 }

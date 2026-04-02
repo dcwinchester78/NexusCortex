@@ -20,6 +20,7 @@ builder.Services.AddScoped<INodeService, NodeService>();
 builder.Services.AddScoped<IRelationshipService, RelationshipService>();
 builder.Services.AddScoped<IDashboardService, DashboardService>();
 builder.Services.AddScoped<IMomentumService, MomentumService>();
+builder.Services.AddScoped<IStagnationService, StagnationService>();
 
 var app = builder.Build();
 

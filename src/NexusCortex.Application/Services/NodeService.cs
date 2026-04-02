@@ -19,6 +19,7 @@ namespace NexusCortex.Application.Services
 
         public async Task<Node> CreateNodeAsync(string name, NodeType type, NodeStatus status = NodeStatus.Pending, DateTime? dueDate = null)
         {
+            var now = DateTime.UtcNow;
             var node = new Node
             {
                 Id = Guid.NewGuid(),
@@ -27,7 +28,8 @@ namespace NexusCortex.Application.Services
                 Status = status,
                 DueDate = dueDate,
                 MomentumScore = 0,
-                CreatedAt = DateTime.UtcNow
+                LastActivityAt = now,
+                CreatedAt = now
             };
 
             await _nodeRepository.InsertAsync(node);
@@ -57,6 +59,7 @@ namespace NexusCortex.Application.Services
                 Status = n.Status,
                 DueDate = n.DueDate,
                 MomentumScore = n.MomentumScore,
+                LastActivityAt = n.LastActivityAt,
                 CreatedAt = n.CreatedAt
             });
 
