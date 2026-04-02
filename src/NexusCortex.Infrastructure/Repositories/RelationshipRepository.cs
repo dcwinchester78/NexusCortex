@@ -37,5 +37,11 @@ namespace NexusCortex.Infrastructure.Repositories
             const string sql = "SELECT * FROM Relationships WHERE SourceNodeId = @SourceNodeId";
             return await _db.QueryAsync<Relationship>(sql, new { SourceNodeId = sourceNodeId });
         }
+
+        public async Task<IEnumerable<Relationship>> GetByTargetNodeIdAsync(Guid targetNodeId)
+        {
+            const string sql = "SELECT * FROM Relationships WHERE TargetNodeId = @TargetNodeId";
+            return await _db.QueryAsync<Relationship>(sql, new { TargetNodeId = targetNodeId });
+        }
     }
 }

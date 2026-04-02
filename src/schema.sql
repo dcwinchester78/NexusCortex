@@ -4,6 +4,7 @@ CREATE TABLE Nodes (
     Type INT NOT NULL,
     Status INT NOT NULL DEFAULT 0,
     DueDate DATETIME2 NULL,
+    MomentumScore DECIMAL(18, 2) NOT NULL DEFAULT 0,
     CreatedAt DATETIME2 NOT NULL
 );
 

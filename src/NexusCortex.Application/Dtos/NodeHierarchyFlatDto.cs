@@ -11,6 +11,7 @@ namespace NexusCortex.Application.Dtos
         public DateTime CreatedAt { get; set; }
         public NodeStatus Status { get; set; }
         public DateTime? DueDate { get; set; }
+        public decimal MomentumScore { get; set; }
         public Guid? ParentId { get; set; }
     }
 }

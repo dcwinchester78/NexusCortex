@@ -26,6 +26,7 @@ namespace NexusCortex.Application.Services
                 Type = type,
                 Status = status,
                 DueDate = dueDate,
+                MomentumScore = 0,
                 CreatedAt = DateTime.UtcNow
             };
 
@@ -55,6 +56,7 @@ namespace NexusCortex.Application.Services
                 Type = n.Type,
                 Status = n.Status,
                 DueDate = n.DueDate,
+                MomentumScore = n.MomentumScore,
                 CreatedAt = n.CreatedAt
             });
 

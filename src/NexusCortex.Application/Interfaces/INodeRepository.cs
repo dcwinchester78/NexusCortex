@@ -9,6 +9,7 @@ namespace NexusCortex.Application.Interfaces
     public interface INodeRepository
     {
         Task InsertAsync(Node node);
+        Task UpdateAsync(Node node);
         Task<Node?> GetByIdAsync(Guid id);
         Task<IEnumerable<Node>> GetAllAsync(NodeType? type = null, Guid? parentId = null, NodeStatus? status = null);
         Task<IEnumerable<Node>> GetTodayActionsAsync();

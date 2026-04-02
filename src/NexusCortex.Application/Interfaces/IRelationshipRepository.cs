@@ -10,5 +10,6 @@ namespace NexusCortex.Application.Interfaces
         Task InsertAsync(Relationship relationship);
         Task<IEnumerable<Relationship>> GetAllAsync();
         Task<IEnumerable<Relationship>> GetBySourceNodeIdAsync(Guid sourceNodeId);
+        Task<IEnumerable<Relationship>> GetByTargetNodeIdAsync(Guid targetNodeId);
     }
 }

@@ -12,10 +12,12 @@ namespace NexusCortex.Api.Controllers
     public class NodesController : ControllerBase
     {
         private readonly INodeService _nodeService;
+        private readonly IMomentumService _momentumService;
 
-        public NodesController(INodeService nodeService)
+        public NodesController(INodeService nodeService, IMomentumService momentumService)
         {
             _nodeService = nodeService;
+            _momentumService = momentumService;
         }
 
         [HttpGet]
@@ -52,6 +54,13 @@ namespace NexusCortex.Api.Controllers
         {
             var impacts = await _nodeService.GetImpactedNodesAsync(id);
             return Ok(impacts);
+        }
+
+        [HttpPost("{id}/calculate-momentum")]
+        public async Task<IActionResult> CalculateMomentum(Guid id)
+        {
+            var score = await _momentumService.CalculateMomentumAsync(id);
+            return Ok(new { MomentumScore = score });
         }
     }
 }
