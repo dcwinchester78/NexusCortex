@@ -28,7 +28,7 @@ namespace NexusCortex.Api.Controllers
         [HttpPost]
         public async Task<IActionResult> Post([FromBody] CreateNodeRequest request)
         {
-            var node = await _nodeService.CreateNodeAsync(request.Name, (NodeType)request.Type);
+            var node = await _nodeService.CreateNodeAsync(request.Name, (NodeType)request.Type, (NodeStatus)request.Status, request.DueDate);
             return Ok(node);
         }
 

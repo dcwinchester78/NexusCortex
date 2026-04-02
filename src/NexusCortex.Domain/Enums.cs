@@ -1,5 +1,12 @@
 namespace NexusCortex.Domain
 {
+    public enum NodeStatus
+    {
+        Pending = 0,
+        Active = 1,
+        Completed = 2
+    }
+
     public enum NodeType
     {
         Area = 0,

@@ -17,13 +17,15 @@ namespace NexusCortex.Application.Services
             _nodeRepository = nodeRepository;
         }
 
-        public async Task<Node> CreateNodeAsync(string name, NodeType type)
+        public async Task<Node> CreateNodeAsync(string name, NodeType type, NodeStatus status = NodeStatus.Pending, DateTime? dueDate = null)
         {
             var node = new Node
             {
                 Id = Guid.NewGuid(),
                 Name = name,
                 Type = type,
+                Status = status,
+                DueDate = dueDate,
                 CreatedAt = DateTime.UtcNow
             };
 
@@ -46,6 +48,8 @@ namespace NexusCortex.Application.Services
                 Id = n.Id,
                 Name = n.Name,
                 Type = n.Type,
+                Status = n.Status,
+                DueDate = n.DueDate,
                 CreatedAt = n.CreatedAt
             });
 

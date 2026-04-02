@@ -10,6 +10,8 @@ namespace NexusCortex.Application.Dtos
         public string Name { get; set; } = string.Empty;
         public NodeType Type { get; set; }
         public DateTime CreatedAt { get; set; }
+        public NodeStatus Status { get; set; }
+        public DateTime? DueDate { get; set; }
         public List<NodeHierarchyDto> Children { get; set; } = new();
     }
 }

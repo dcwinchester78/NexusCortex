@@ -15,8 +15,10 @@ builder.Services.AddScoped<IDbConnection>(sp => new SqlConnection(connectionStri
 
 builder.Services.AddScoped<INodeRepository, NodeRepository>();
 builder.Services.AddScoped<IRelationshipRepository, RelationshipRepository>();
+builder.Services.AddScoped<IDashboardRepository, DashboardRepository>();
 builder.Services.AddScoped<INodeService, NodeService>();
 builder.Services.AddScoped<IRelationshipService, RelationshipService>();
+builder.Services.AddScoped<IDashboardService, DashboardService>();
 
 var app = builder.Build();
 

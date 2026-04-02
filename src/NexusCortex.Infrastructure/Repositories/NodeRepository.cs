@@ -21,8 +21,8 @@ namespace NexusCortex.Infrastructure.Repositories
         public async Task InsertAsync(Node node)
         {
             const string sql = @"
-                INSERT INTO Nodes (Id, Name, Type, CreatedAt)
-                VALUES (@Id, @Name, @Type, @CreatedAt)";
+                INSERT INTO Nodes (Id, Name, Type, Status, DueDate, CreatedAt)
+                VALUES (@Id, @Name, @Type, @Status, @DueDate, @CreatedAt)";
 
             await _db.ExecuteAsync(sql, node);
         }
@@ -43,13 +43,13 @@ namespace NexusCortex.Infrastructure.Repositories
         {
             const string sql = @"
                 WITH NodeCTE AS (
-                    SELECT n.Id, n.Name, n.Type, n.CreatedAt, CAST(NULL AS UNIQUEIDENTIFIER) as ParentId
+                    SELECT n.Id, n.Name, n.Type, n.CreatedAt, n.Status, n.DueDate, CAST(NULL AS UNIQUEIDENTIFIER) as ParentId
                     FROM Nodes n
                     WHERE n.Id = @RootNodeId
 
                     UNION ALL
 
-                    SELECT n.Id, n.Name, n.Type, n.CreatedAt, r.TargetNodeId as ParentId
+                    SELECT n.Id, n.Name, n.Type, n.CreatedAt, n.Status, n.DueDate, r.TargetNodeId as ParentId
                     FROM Nodes n
                     INNER JOIN Relationships r ON n.Id = r.SourceNodeId
                     INNER JOIN NodeCTE c ON r.TargetNodeId = c.Id

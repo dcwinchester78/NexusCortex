@@ -8,5 +8,7 @@ namespace NexusCortex.Domain
         public string Name { get; set; } = string.Empty;
         public NodeType Type { get; set; }
         public DateTime CreatedAt { get; set; }
+        public NodeStatus Status { get; set; }
+        public DateTime? DueDate { get; set; }
     }
 }

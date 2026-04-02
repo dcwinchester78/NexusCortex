@@ -6,6 +6,8 @@ namespace NexusCortex.Api.Dtos
     {
         public string Name { get; set; } = string.Empty;
         public int Type { get; set; }
+        public int Status { get; set; } = 0;
+        public DateTime? DueDate { get; set; }
     }
 
     public class CreateRelationshipRequest
